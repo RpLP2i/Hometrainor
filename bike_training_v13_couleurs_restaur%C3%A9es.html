@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<title>Bike Training — Objectifs par bloc</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#151f30;--panel2:#1d2a3e;--line:#2b3d55;--txt:#f4f7fb;--muted:#9aabc2;--green:#35c78a;--red:#ef6666;--blue:#69a9ff;--orange:#f3aa45}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#111d30,#080d17 70%);color:var(--txt);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1600px;width:100%;margin:auto;padding:20px 15px 45px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{margin:0;font-size:clamp(25px,4vw,36px);letter-spacing:.04em}.sub{color:var(--muted);margin:6px 0 18px}.tag{border:1px solid var(--line);border-radius:99px;padding:7px 11px;color:var(--muted);font-size:12px}
+.layout{display:grid;grid-template-columns:1fr 1.1fr;gap:16px}.stack{display:grid;gap:14px}.card{background:var(--panel);border:1px solid #26364c;border-radius:17px;padding:16px;min-width:0}.card h2{font-size:18px;margin:0 0 12px}.muted{color:var(--muted)}.tiny{font-size:12px;color:var(--muted);line-height:1.45}
+button,select,input{font:inherit}button{border:0;border-radius:11px;padding:11px 14px;background:var(--green);color:#08131d;font-weight:750;cursor:pointer}button.secondary{background:#2a3b54;color:var(--txt)}button.danger{background:#5a2931;color:#ffe5e5}button:disabled{opacity:.42;cursor:not-allowed}
+select,input{background:#0d1726;border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px;min-width:0;width:100%}
+.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.metric{background:var(--panel2);border-radius:13px;padding:12px 8px;text-align:center}.metric .v{font-size:clamp(25px,4vw,39px);font-weight:850;line-height:1.1;font-variant-numeric:tabular-nums}.metric .l{font-size:11px;color:var(--muted);margin-top:5px}
+.hero{background:#0d1726;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;margin-bottom:12px}.phase{font-size:13px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}.count{font-size:clamp(52px,9vw,82px);font-weight:900;line-height:1.05;font-variant-numeric:tabular-nums;margin:5px}.phaseMeta{color:var(--muted);font-size:13px}.progress{height:8px;background:#28374c;border-radius:20px;overflow:hidden;margin-top:12px}.progress>div{height:100%;background:var(--green);width:0%;transition:width .2s}
+.status{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:#728198}.dot.on{background:var(--green);box-shadow:0 0 9px #35c78a99}
+.targetGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.target{background:#101b2b;border:1px solid #26364c;border-radius:10px;padding:9px;text-align:center}.target .v{font-weight:800;font-size:20px;font-variant-numeric:tabular-nums}.target .l{font-size:10px;color:var(--muted);margin-top:3px}.target .actual{font-size:11px;margin-top:5px;color:var(--muted);font-weight:700}
+.target.zone-good{border-color:var(--green);background:#123126}
+.target.zone-low{border-color:var(--orange);background:#342918}
+.target.zone-high{border-color:var(--red);background:#381e27}
+.target.zone-neutral{border-color:#26364c}
+.target .actual.zone-good{color:var(--green)}
+.target .actual.zone-low{color:var(--orange)}
+.target .actual.zone-high{color:var(--red)}
+.block{background:#101a2a;border:1px solid #2a3c54;border-radius:13px;padding:12px;margin-top:10px}.blockHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}.blockTitle{font-weight:800}.fields{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.field input,.field select{padding:8px;font-size:13px}.subblock{background:#18263a;border-radius:10px;padding:10px;margin-top:8px}.subblockTitle{font-size:12px;font-weight:750;margin-bottom:8px}.subfields{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.pill{font-size:11px;border-radius:99px;padding:5px 8px;background:#25364d;color:#d9e8fa}.goalLine{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.goalLine span{font-size:11px;background:#1c2b40;padding:5px 7px;border-radius:7px;color:#d4e2f4}
+.editorActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.editorActions button{flex:1}
+.stationLinks{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.youtubeFrame{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#080e18;margin-top:10px}.youtubeHelp{font-size:11px;color:var(--muted);line-height:1.4;margin-top:7px}.stationLinks a{color:#c8dcff;text-decoration:none;background:#24344a;border-radius:9px;padding:8px 10px;font-size:12px}
+.log{background:#080e18;border:1px solid var(--line);border-radius:10px;padding:10px;height:95px;overflow:auto;font:11px/1.5 ui-monospace,monospace;color:#b7c7da;white-space:pre-wrap}
+.notice{background:#19283d;border-left:3px solid var(--blue);padding:11px 13px;border-radius:8px;color:#d5e2f3;font-size:13px;line-height:1.45;margin-bottom:13px}
+#ftpMenu .progress{margin:8px 0 10px}#ftpMenu .notice{font-size:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}@media(max-width:650px){main{padding:14px 10px 30px}.card{padding:13px}.metrics{grid-template-columns:repeat(2,1fr)}.targetGrid{grid-template-columns:repeat(2,1fr)}.fields,.subfields{grid-template-columns:repeat(2,minmax(0,1fr))}.row.stackMobile{display:grid;grid-template-columns:1fr 1fr}}
+
+/* Connexions Bluetooth compactes */
+#bluetoothCard{padding:14px 16px!important;min-height:0!important;height:max-content!important;align-self:start!important}
+#bluetoothCard h2{margin:0 0 9px!important;font-size:18px!important}
+#bluetoothCard .connectRow{display:grid;grid-template-columns:minmax(150px,1fr) auto;align-items:center;gap:10px;margin:6px 0!important}
+#bluetoothCard .connectRow button{padding:9px 12px!important;min-height:38px!important;font-size:14px!important}
+#bluetoothCard .connectRow .status{font-size:12px!important;white-space:nowrap}
+#bluetoothCard #disconnectDevices{margin-top:5px!important;padding:9px 12px!important;min-height:36px!important;font-size:13px!important}
+@media(max-width:650px){#bluetoothCard .connectRow{grid-template-columns:1fr;gap:4px}#bluetoothCard .connectRow .status{padding-left:2px}}
+
+
+/* Colonne droite compacte : lecteur immédiatement sous le Bluetooth */
+.layout{align-items:start}
+.stack:has(#bluetoothCard){align-content:start;grid-auto-rows:max-content;align-self:start}
+#bluetoothCard{height:max-content!important;min-height:0!important}
+#bluetoothCard+#bluetoothCard{margin-top:0}
+#bluetoothCard~.card .youtubeFrame{display:block;width:100%;max-width:none;aspect-ratio:16/9;height:auto;min-height:0;margin-top:12px}
+@media(max-width:900px){#bluetoothCard~.card .youtubeFrame{min-height:260px}}
+@media(max-width:650px){#bluetoothCard~.card .youtubeFrame{min-height:220px}}
+
+
+/* Données réelles et objectifs regroupés par indicateur */
+.combinedMetrics{margin-top:12px;align-items:stretch}
+.combinedMetric{min-width:0;padding:12px 8px!important;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.combinedMetric .goalValue{font-size:clamp(17px,2vw,23px);font-weight:850;line-height:1.1;font-variant-numeric:tabular-nums;margin-bottom:2px}
+.combinedMetric .v{font-size:clamp(25px,3vw,35px);font-weight:900;line-height:1.05;margin-top:7px}
+.combinedMetric .l{font-size:10px;line-height:1.25}
+.combinedMetric .actual{font-size:10px;line-height:1.25;margin-top:5px}
+.combinedMetric.zone-good{border-color:var(--green);background:#123126}
+.combinedMetric.zone-low{border-color:var(--orange);background:#342918}
+.combinedMetric.zone-high{border-color:var(--red);background:#381e27}
+.combinedMetric.zone-neutral{border-color:#26364c}
+.combinedMetric .actual.zone-good{color:var(--green)}
+.combinedMetric .actual.zone-low{color:var(--orange)}
+.combinedMetric .actual.zone-high{color:var(--red)}
+@media(max-width:650px){.combinedMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Restauration renforcée des couleurs d'état sur les cartes regroupées */
+#tileRpm.zone-good,#tileRes.zone-good,#tileW.zone-good,#tileHr.zone-good{
+ border:1px solid #32c98b!important;background:#123126!important;color:#f4f7fb!important;
+}
+#tileRpm.zone-low,#tileRes.zone-low,#tileW.zone-low,#tileHr.zone-low{
+ border:1px solid #f4a62a!important;background:#342918!important;color:#fff7e8!important;
+}
+#tileRpm.zone-high,#tileRes.zone-high,#tileW.zone-high,#tileHr.zone-high{
+ border:1px solid #ef5b68!important;background:#381e27!important;color:#fff0f1!important;
+}
+#tileRpm.zone-neutral,#tileRes.zone-neutral,#tileW.zone-neutral,#tileHr.zone-neutral{
+ border:1px solid #26364c!important;background:#1e2b40!important;color:#f4f7fb!important;
+}
+#tileRpm .actual.zone-good,#tileRes .actual.zone-good,#tileW .actual.zone-good,#tileHr .actual.zone-good{color:#32c98b!important}
+#tileRpm .actual.zone-low,#tileRes .actual.zone-low,#tileW .actual.zone-low,#tileHr .actual.zone-low{color:#f4a62a!important}
+#tileRpm .actual.zone-high,#tileRes .actual.zone-high,#tileW .actual.zone-high,#tileHr .actual.zone-high{color:#ef5b68!important}
+#tileRpm .actual.zone-neutral,#tileRes .actual.zone-neutral,#tileW .actual.zone-neutral,#tileHr .actual.zone-neutral{color:#9fb0c7!important}
+
+</style>
+</head>
+<body>
+<main>
+ <div class="top"><h1>BIKE TRAINING</h1><span class="tag">V13 · COULEURS RESTAURÉES</span></div>
+ <p class="sub">Séances programmées, cibles de cadence / résistance / puissance / fréquence cardiaque et suivi en direct.</p>
+ <div class="notice" id="compat">Vérification du navigateur…</div>
+ <div class="layout">
+  <div class="stack">
+   <section class="card">
+    <h2>Pilotage de la séance</h2>
+    <div class="hero">
+     <div class="phase" id="phaseName">Prêt à démarrer</div><div class="count" id="clock">00:00</div>
+     <div class="phaseMeta" id="phaseInfo">Charge une séance puis démarre</div>
+     <div class="progress"><div id="progressBar"></div></div>
+     <div class="tiny" id="overall" style="margin-top:8px">Temps total : 00:00 · Écoulé : 00:00</div>
+    </div>
+    <div class="metrics combinedMetrics">
+     <div class="metric target zone-neutral combinedMetric" id="tileRpm">
+      <div class="goalValue" id="goalRpm">—</div><div class="l">RPM CIBLE</div>
+      <div class="v" id="rpm">—</div><div class="l">RPM RÉEL</div><div class="actual" id="deltaRpm">Mesuré : —</div>
+     </div>
+     <div class="metric target zone-neutral combinedMetric" id="tileRes">
+      <div class="goalValue" id="goalRes">—</div><div class="l">RÉSISTANCE CIBLE</div>
+      <div class="v" id="resistance">—</div><div class="l">RÉSISTANCE RÉELLE</div><div class="actual" id="deltaRes">Mesuré : —</div>
+     </div>
+     <div class="metric target zone-neutral combinedMetric" id="tileW">
+      <div class="goalValue" id="goalW">—</div><div class="l">WATTS CIBLES</div>
+      <div class="v" id="watts">—</div><div class="l">PUISSANCE RÉELLE</div><div class="actual" id="deltaW">Mesuré : —</div>
+     </div>
+     <div class="metric target zone-neutral combinedMetric" id="tileHr">
+      <div class="goalValue" id="goalHr">—</div><div class="l">FC CIBLE</div>
+      <div class="v" id="bpm">—</div><div class="l">FRÉQUENCE RÉELLE</div><div class="actual" id="deltaHr">Mesuré : —</div>
+     </div>
+    </div>
+    <div class="row stackMobile" style="margin-top:13px">
+     <button id="start">▶ Démarrer</button><button class="secondary" id="pause" disabled>Ⅱ Pause</button>
+     <button class="secondary" id="next" disabled>⏭ Phase suivante</button><button class="danger" id="reset">↺ Réinitialiser</button>
+    </div>
+   </section>
+   <section class="card">
+    <h2>Séance préprogrammée et modifiable</h2>
+    <div class="row">
+     <select id="preset"><option value="threshold">Séance 1 · Intervalles seuil 4 × 8 min</option><option value="endurance2">Séance 2 · Endurance zone 2</option><option value="vo2">Séance 3 · Intervalles VO₂max 6 × 3 min</option><option value="example">Séance exemple · ECT + activation + 30/15</option><option value="endurance">Ancienne séance · Endurance progressive</option><option value="interval">Ancienne séance · 30/15</option></select>
+     <button class="secondary fit" id="loadPreset">Charger</button>
+    </div>
+    <div class="row" style="margin-top:8px"><label class="tiny">Durée de la séance endurance zone 2<select id="enduranceDuration"><option value="60">60 minutes</option><option value="75">75 minutes</option><option value="90">90 minutes</option></select></label></div>
+    <div class="tiny" style="margin-top:8px">Chaque phase possède ses propres objectifs. Les champs FC min/max sont facultatifs. Pour les intervalles, les objectifs d'effort et de récupération sont séparés.</div>
+    <div id="editor"></div>
+    <div class="editorActions">
+     <button class="secondary" id="addSimple">＋ Ajouter un bloc</button>
+     <button class="secondary" id="addInterval">＋ Ajouter un 30/15</button>
+     <button class="secondary" id="savePlan">Enregistrer la séance</button>
+     <button class="secondary" id="loadPlan">Charger ma séance</button>
+    </div>
+    <div class="row" style="margin-top:10px"><strong id="totalDuration">Durée totale : —</strong><span class="tiny" id="blockCount"></span></div>
+    <div class="tiny" style="margin-top:8px">Les cibles de puissance sont calculées à partir de la FTP enregistrée : seuil 98 % (zone 91-105 %), endurance 65,5 % (zone 56-75 %), VO₂max 113 % (zone 106-120 %). Elles servent de repère central, pas de limite rigide.</div>
+   </section>
+   <section class="card" id="ftpMenu">
+    <h2>Menu indépendant · Test FTP</h2>
+    <p class="tiny">Test de 20 minutes pour estimer ta FTP à partir de la puissance moyenne réellement mesurée par le vélo connecté.</p>
+    <div class="metrics" style="grid-template-columns:repeat(2,1fr);margin:10px 0">
+     <div class="metric"><div class="v" id="ftpClock">00:00</div><div class="l" id="ftpPhase">PRÊT POUR LE TEST</div></div>
+     <div class="metric"><div class="v" id="ftpLive">—</div><div class="l">PUISSANCE EN DIRECT · W</div></div>
+    </div>
+    <div class="progress"><div id="ftpProgress"></div></div>
+    <div class="tiny" id="ftpInstruction" style="margin:9px 0">Échauffement 10 min · Activation 3 min · Récupération 2 min · Effort préparatoire 5 min · Récupération 10 min · Test 20 min · Retour au calme 10 min</div>
+    <div class="row">
+     <button id="ftpStart">▶ Démarrer le test</button><button class="secondary" id="ftpPause" disabled>Ⅱ Pause</button><button class="danger" id="ftpReset">↺ Réinitialiser</button>
+    </div>
+    <div class="targetGrid" style="margin-top:12px">
+     <div class="target"><div class="v" id="ftpAverage">—</div><div class="l">MOYENNE SUR 20 MIN · W</div></div>
+     <div class="target"><div class="v" id="ftpEstimate">—</div><div class="l">FTP ESTIMÉE · W</div></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+     <label class="tiny">FTP enregistrée (W)<input id="ftpManual" type="number" min="1" max="2000" step="1" placeholder="Saisir ou calculer"></label>
+     <label class="tiny">FC max (facultatif)<input id="hrMaxManual" type="number" min="80" max="240" step="1" placeholder="Ex. 185"></label>
+     <button class="secondary fit" id="ftpSave">Enregistrer</button>
+    </div>
+    <div class="tiny" id="ftpSavedInfo" style="margin-top:7px">Aucune FTP enregistrée.</div>
+    <div class="notice" style="margin:10px 0 0">Calcul : FTP estimée = 95 % de la puissance moyenne des 20 minutes. Réalise ce test reposé, après échauffement, et répartis ton effort régulièrement. Arrête en cas de douleur, malaise ou symptôme inhabituel.</div>
+   </section>
+  </div>
+  <div class="stack">
+   <section class="card" id="bluetoothCard">
+    <h2>Connexions Bluetooth</h2>
+    <div class="row connectRow"><button id="bikeConnect">Connecter le vélo</button><span class="status"><i class="dot" id="bikeDot"></i><span id="bikeStatus">Non connecté</span></span></div>
+    <div class="row connectRow" style="margin-top:9px"><button id="hrConnect">Connecter HRM Band</button><span class="status"><i class="dot" id="hrDot"></i><span id="hrStatus">Non connecté</span></span></div>
+    <button class="secondary" id="disconnectAll" style="margin-top:10px;width:100%">Déconnecter les appareils</button>
+   </section>
+   <section class="card">
+    <h2>Lecteur YouTube</h2>
+    <div class="row">
+     <input id="youtubeUrl" type="url" placeholder="Colle le lien d’une vidéo ou playlist YouTube">
+     <button class="fit" id="loadYoutube">Lire</button>
+    </div>
+    <iframe id="youtubePlayer" class="youtubeFrame" src="about:blank" title="Lecteur YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div class="youtubeHelp" id="youtubeHelp">Colle un lien YouTube classique, youtu.be ou une playlist. La lecture démarre après un clic dans le lecteur.</div>
+   </section>
+   <section class="card">
+    <h2>Radio en ligne</h2>
+    <div class="row"><select id="radioGenre"><option value="rock">ROCK</option><option value="pop">POP</option><option value="rap">RAP / HIP-HOP</option></select><select id="station"></select></div>
+    <button id="openRadio" style="width:100%;margin-top:9px">♫ Ouvrir le lecteur radio</button>
+    <div class="tiny" style="margin-top:7px">La radio s'ouvre dans un nouvel onglet. Le navigateur peut demander d'autoriser la lecture audio.</div>
+   </section>
+   <section class="card">
+    <h2>Coach vocal</h2>
+    <div class="row">
+     <label class="tiny">Langue du coach<select id="voiceLanguage"><option value="en-US" selected>English (US)</option><option value="en-GB">English (UK)</option><option value="fr-FR">Français</option></select></label>
+     <label class="tiny">Fréquence<select id="coachInterval"><option value="30">Toutes les 30 secondes</option><option value="60">Toutes les 60 secondes</option><option value="90">Toutes les 90 secondes</option><option value="0">Désactivé</option></select></label>
+     <label class="tiny">Volume<input id="coachVolume" type="range" min="0" max="1" step=".1" value=".9"></label>
+    </div>
+    <div class="row" style="margin-top:9px"><button class="secondary" id="testVoice">Tester la voix</button><button class="secondary" id="coachToggle">Coach activé</button></div>
+    <div class="tiny" style="margin-top:7px">Voix sélectionnée parmi celles installées sur l'appareil. La qualité et le choix des voix dépendent de Chrome et du système.</div>
+   </section>
+   <section class="card">
+    <h2>Bilan de séance</h2>
+    <div class="metrics" style="grid-template-columns:repeat(2,1fr)">
+     <div class="metric"><div class="v" id="avgW">—</div><div class="l">WATTS MOYENS</div></div><div class="metric"><div class="v" id="maxW">—</div><div class="l">WATTS MAX</div></div>
+     <div class="metric"><div class="v" id="avgHR">—</div><div class="l">FC MOYENNE</div></div><div class="metric"><div class="v" id="maxHR">—</div><div class="l">FC MAX</div></div>
+    </div>
+    <div id="intervalSummary" class="tiny" style="margin-top:10px"></div><button class="secondary" id="exportCsv" style="width:100%;margin-top:10px">Exporter les données CSV</button>
+   </section>
+  </div>
+ </div>
+ <section class="card" style="margin-top:14px"><h2>Journal technique</h2><div class="log" id="log"></div></section>
+ <p class="tiny" style="margin-top:13px">Chrome récent sur Mac ou Android, depuis HTTPS ou localhost. Les objectifs sont des consignes affichées : l'application ne commande pas automatiquement la résistance du vélo. Web Bluetooth n'est pas pris en charge par Chrome sur iPhone/iPad. Les radios nécessitent Internet.</p>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const U={hr:'0000180d-0000-1000-8000-00805f9b34fb',hrm:'00002a37-0000-1000-8000-00805f9b34fb',ftms:'00001826-0000-1000-8000-00805f9b34fb',ibd:'00002ad2-0000-1000-8000-00805f9b34fb',csc:'00001816-0000-1000-8000-00805f9b34fb',cscm:'00002a5b-0000-1000-8000-00805f9b34fb',power:'00002a63-0000-1000-8000-00805f9b34fb'};
+const radio={rock:[['Europe 2','https://www.europe2.fr/'],['RTL2','https://www.rtl2.fr/'],['OÜI FM','https://www.ouifm.fr/']],pop:[['NRJ','https://www.nrj.fr/'],['RFM','https://www.rfm.fr/'],['Chérie FM','https://www.cheriefm.fr/']],rap:[['Skyrock','https://www.skyrock.fm/'],['Mouv’','https://www.radiofrance.fr/mouv'],['Générations','https://generations.fr/']]};
+const target=(rpm=null,res=null,w=null,hrMin=null,hrMax=null)=>({rpm,res,w,hrMin,hrMax});
+const example=[
+ {kind:'simple',name:'Échauffement',dur:300,goal:target(90,2,75)},
+ {kind:'cycle',name:'Activation · 3 tours',rounds:3,items:[
+  {name:'Effort court',dur:30,goal:target(95,4,140)},
+  {name:'Endurance active',dur:120,goal:target(100,2,100)},
+  {name:'Récupération active',dur:60,goal:target(90,2,80)}
+ ]},
+ {kind:'interval',name:'30/15 intense',work:30,rest:15,reps:12,workGoal:target(100,4,140),restGoal:target(null,null,null)},
+ {kind:'simple',name:'Récupération finale',dur:300,goal:target(100,2,100)}
+];
+const plans={
+ example:example,
+ endurance:[
+  {kind:'simple',name:'Échauffement',dur:300,goal:target(85,2,70)},
+  {kind:'simple',name:'ECT 1',dur:600,goal:target(90,3,110)},
+  {kind:'simple',name:'Récupération',dur:120,goal:target(85,2,80)},
+  {kind:'simple',name:'ECT 2',dur:600,goal:target(90,3,115)},
+  {kind:'simple',name:'Retour au calme',dur:180,goal:target(80,1,60)}
+ ],
+ interval:[
+  {kind:'simple',name:'Échauffement',dur:300,goal:target(85,2,70)},
+  {kind:'interval',name:'30/15',work:30,rest:15,reps:16,workGoal:target(100,4,140),restGoal:target(85,2,80)},
+  {kind:'simple',name:'Retour au calme',dur:300,goal:target(80,1,60)}
+ ]
+};
+
+function getFTP(){const v=Number(localStorage.getItem('bikeTrainingFTP'));return Number.isFinite(v)&&v>0?v:null;}
+function powerAt(pct){const f=getFTP();return f?Math.round(f*pct/100):null;}
+function optimizedPlan(key){
+ const z1=powerAt(50),z2=powerAt(65.5),z3=powerAt(85),z4=powerAt(98),z5=powerAt(113);
+ if(key==='threshold'){
+  const a=[{kind:'simple',name:'Échauffement progressif · Z1-Z2',dur:600,goal:target(null,null,z1)}];
+  for(let i=1;i<=4;i++){a.push({kind:'simple',name:`Seuil · répétition ${i}/4 · Z4 91-105 % FTP`,dur:480,goal:target(null,null,z4)});if(i<4)a.push({kind:'simple',name:`Récupération Z1 · ${i}/3`,dur:240,goal:target(null,1,z1)});}
+  a.push({kind:'simple',name:'Retour au calme · Z1',dur:600,goal:target(null,1,powerAt(50))});
+  return a;
+ }
+ if(key==='endurance2'){
+  const mins=+$('enduranceDuration').value||60;const hrMax=Number(localStorage.getItem('bikeTrainingHRmax'))||null;const hrCap=hrMax?Math.round(hrMax*.75):null;
+  return [{kind:'simple',name:`Endurance continue · Z2 56-75 % FTP · ${mins} min`,dur:mins*60,goal:target(85,null,z2,null,hrCap)}];
+ }
+ if(key==='vo2'){
+  const a=[{kind:'simple',name:'Échauffement progressif · Z1-Z2-Z3',dur:900,goal:target(null,null,z3)}];
+  for(let i=1;i<=6;i++){a.push({kind:'simple',name:`VO₂max · répétition ${i}/6 · Z5 106-120 % FTP`,dur:180,goal:target(null,null,z5)});if(i<6)a.push({kind:'simple',name:`Récupération Z1 · ${i}/5`,dur:180,goal:target(null,1,powerAt(50))});}
+  a.push({kind:'simple',name:'Retour au calme · Z1',dur:600,goal:target(null,1,powerAt(50))});
+  return a;
+ }
+ return clone(plans[key]||plans.example);
+}
+
+let blocks=structuredClone(plans.example),bike=null,hr=null,timer=null,runState='idle',steps=[],idx=0,left=0,elapsed=0,total=0,lastTick=0,lastCoach=0,lastSample=0,records=[],voiceOn=true,vals={rpm:null,res:null,w:null,hr:null};
+const typeNames={simple:'Bloc',cycle:'Cycle',interval:'Intervalles'};
+const clone=o=>JSON.parse(JSON.stringify(o));
+const log=s=>{$('log').textContent+=`[${new Date().toLocaleTimeString('fr-FR')}] ${s}\n`;$('log').scrollTop=$('log').scrollHeight;};
+const fmt=n=>{n=Math.max(0,Math.floor(n));return `${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const secBlock=b=>b.kind==='interval'?(+b.work + +b.rest)*(+b.reps):b.kind==='cycle'?b.items.reduce((a,x)=>a+(+x.dur),0)*(+b.rounds):+b.dur;
+const totalSecs=()=>blocks.reduce((a,b)=>a+secBlock(b),0);
+function goalFields(g,goalKey,i,j=null){
+ const fields=[['hrMin','FC min',0,240],['hrMax','FC max',0,240]];
+ return `<div class="subfields">${fields.map(([k,label,min,max])=>`<div class="field"><label>${label}</label><input type="number" min="${min}" max="${max}" step="1" data-i="${i}" ${j===null?'':`data-j="${j}"`} data-goal="${goalKey}" data-key="${k}" value="${g[k]??''}" placeholder="—"></div>`).join('')}</div>`;
+}
+function renderEditor(){
+ const root=$('editor');root.innerHTML='';
+ blocks.forEach((b,i)=>{
+  const el=document.createElement('div');el.className='block';
+  let body='';
+  if(b.kind==='simple'){
+   body=`<div class="fields">
+    <div class="field"><label>Nom du bloc</label><input data-i="${i}" data-key="name" value="${esc(b.name)}"></div>
+    <div class="field"><label>Durée (secondes)</label><input type="number" min="1" data-i="${i}" data-key="dur" value="${b.dur}"></div>
+    <div class="field"><label>RPM cible</label><input type="number" min="0" data-i="${i}" data-goal="goal" data-key="rpm" value="${b.goal.rpm??''}" placeholder="—"></div>
+    <div class="field"><label>Résistance</label><input type="number" min="0" data-i="${i}" data-goal="goal" data-key="res" value="${b.goal.res??''}" placeholder="—"></div>
+    <div class="field"><label>Watts cible</label><input type="number" min="0" data-i="${i}" data-goal="goal" data-key="w" value="${b.goal.w??''}" placeholder="—"></div>
+   </div><div class="subblock"><div class="subblockTitle">Fréquence cardiaque cible (facultatif)</div>${goalFields(b.goal,'goal',i)}</div>`;
+  }else if(b.kind==='cycle'){
+   body=`<div class="fields"><div class="field"><label>Nom du cycle</label><input data-i="${i}" data-key="name" value="${esc(b.name)}"></div><div class="field"><label>Nombre de tours</label><input type="number" min="1" max="30" data-i="${i}" data-key="rounds" value="${b.rounds}"></div></div>`;
+   b.items.forEach((it,j)=>{body+=`<div class="subblock"><div class="subblockTitle">${j+1}. ${esc(it.name)}</div><div class="fields">
+    <div class="field"><label>Nom</label><input data-i="${i}" data-j="${j}" data-key="name" value="${esc(it.name)}"></div>
+    <div class="field"><label>Durée (s)</label><input type="number" min="1" data-i="${i}" data-j="${j}" data-key="dur" value="${it.dur}"></div>
+    <div class="field"><label>RPM</label><input type="number" min="0" data-i="${i}" data-j="${j}" data-goal="goal" data-key="rpm" value="${it.goal.rpm??''}" placeholder="—"></div>
+    <div class="field"><label>Résistance</label><input type="number" min="0" data-i="${i}" data-j="${j}" data-goal="goal" data-key="res" value="${it.goal.res??''}" placeholder="—"></div>
+    <div class="field"><label>Watts</label><input type="number" min="0" data-i="${i}" data-j="${j}" data-goal="goal" data-key="w" value="${it.goal.w??''}" placeholder="—"></div></div>
+    <div class="subblockTitle" style="margin-top:8px">FC cible (facultatif)</div>${goalFields(it.goal,'goal',i,j)}</div>`;});
+   body+=`<button class="secondary" data-additem="${i}" style="margin-top:8px">＋ Ajouter une étape au cycle</button>`;
+  }else{
+   body=`<div class="fields">
+    <div class="field"><label>Nom</label><input data-i="${i}" data-key="name" value="${esc(b.name)}"></div>
+    <div class="field"><label>Effort (s)</label><input type="number" min="1" data-i="${i}" data-key="work" value="${b.work}"></div>
+    <div class="field"><label>Récupération (s)</label><input type="number" min="0" data-i="${i}" data-key="rest" value="${b.rest}"></div>
+    <div class="field"><label>Répétitions</label><select data-i="${i}" data-key="reps">${[12,16,20,24].map(n=>`<option ${+b.reps===n?'selected':''}>${n}</option>`).join('')}</select></div>
+   </div>
+   <div class="subblock"><div class="subblockTitle">Objectifs pendant l'effort</div><div class="fields">
+    <div class="field"><label>RPM</label><input type="number" data-i="${i}" data-goal="workGoal" data-key="rpm" value="${b.workGoal.rpm??''}"></div>
+    <div class="field"><label>Résistance</label><input type="number" data-i="${i}" data-goal="workGoal" data-key="res" value="${b.workGoal.res??''}"></div>
+    <div class="field"><label>Watts</label><input type="number" data-i="${i}" data-goal="workGoal" data-key="w" value="${b.workGoal.w??''}"></div>
+    </div><div class="subblockTitle" style="margin-top:8px">FC cible (facultatif)</div>${goalFields(b.workGoal,'workGoal',i)}</div>
+   <div class="subblock"><div class="subblockTitle">Objectifs pendant les 15 secondes de récupération</div><div class="fields">
+    <div class="field"><label>RPM</label><input type="number" data-i="${i}" data-goal="restGoal" data-key="rpm" value="${b.restGoal.rpm??''}" placeholder="—"></div>
+    <div class="field"><label>Résistance</label><input type="number" data-i="${i}" data-goal="restGoal" data-key="res" value="${b.restGoal.res??''}" placeholder="—"></div>
+    <div class="field"><label>Watts</label><input type="number" data-i="${i}" data-goal="restGoal" data-key="w" value="${b.restGoal.w??''}" placeholder="—"></div>
+    </div><div class="subblockTitle" style="margin-top:8px">FC cible (facultatif)</div>${goalFields(b.restGoal,'restGoal',i)}</div>`;
+  }
+  el.innerHTML=`<div class="blockHead"><span class="blockTitle">${i+1}. ${typeNames[b.kind]} · ${fmt(secBlock(b))}</span><button class="danger" data-delete="${i}">Supprimer</button></div>${body}`;
+  root.appendChild(el);
+ });
+ root.querySelectorAll('input,select').forEach(inp=>inp.addEventListener('change',()=>{
+  const i=+inp.dataset.i,j=inp.dataset.j===undefined?null:+inp.dataset.j,key=inp.dataset.key;
+  const targetObj=j!==null?blocks[i].items[j]:blocks[i];
+  if(inp.dataset.goal){const g=inp.dataset.goal==='goal'?targetObj.goal:targetObj[inp.dataset.goal];g[key]=inp.value===''?null:+inp.value;}
+  else targetObj[key]=['name'].includes(key)?inp.value:+inp.value;
+  renderEditor();
+ }));
+ root.querySelectorAll('[data-delete]').forEach(btn=>btn.addEventListener('click',()=>{blocks.splice(+btn.dataset.delete,1);renderEditor();resetWorkout();}));
+ root.querySelectorAll('[data-additem]').forEach(btn=>btn.addEventListener('click',()=>{blocks[+btn.dataset.additem].items.push({name:'Nouvelle étape',dur:60,goal:target()});renderEditor();}));
+ $('totalDuration').textContent='Durée totale : '+fmt(totalSecs());$('blockCount').textContent=blocks.length+' blocs principaux';
+}
+function loadPreset(){const k=$('preset').value;blocks=optimizedPlan(k);renderEditor();resetWorkout();log('Séance chargée : '+$('preset').selectedOptions[0].text);}
+function flatten(){
+ const out=[];
+ blocks.forEach(b=>{
+  if(b.kind==='simple')out.push({name:b.name,dur:+b.dur,goal:b.goal,kind:'simple'});
+  if(b.kind==='cycle')for(let r=1;r<=+b.rounds;r++)b.items.forEach(it=>out.push({name:`${b.name} · tour ${r}/${b.rounds} · ${it.name}`,dur:+it.dur,goal:it.goal,kind:'cycle'}));
+  if(b.kind==='interval')for(let r=1;r<=+b.reps;r++){
+   out.push({name:`${b.name} · effort ${r}/${b.reps}`,dur:+b.work,goal:b.workGoal,kind:'work'});
+   if(+b.rest>0)out.push({name:`${b.name} · récupération ${r}/${b.reps}`,dur:+b.rest,goal:b.restGoal,kind:'rest'});
+  }
+ });return out.filter(s=>s.dur>0);
+}
+function displayTarget(id,val,unit){$(id).textContent=val==null?'—':`${val}${unit}`;}
+function setZone(tileId,actualId,actual,targetValue,kind){
+ const tile=$(tileId),label=$(actualId);
+ tile.classList.remove('zone-good','zone-low','zone-high','zone-neutral');
+ label.classList.remove('zone-good','zone-low','zone-high');
+ if(actual==null || targetValue==null || (typeof targetValue==='object' && targetValue.min==null && targetValue.max==null)){
+  tile.classList.add('zone-neutral');
+  label.textContent='Mesuré : '+(actual==null?'—':Math.round(actual))+' · cible non définie';
+  return;
+ }
+ let state='zone-good',status='Dans la cible';
+ if(kind==='range'){
+  const min=targetValue.min,max=targetValue.max;
+  if(min!=null && actual<min) {state='zone-low';status='Sous la cible';}
+  else if(max!=null && actual>max) {state='zone-high';status='Au-dessus';}
+ }else{
+  const target=targetValue;
+  let tolerance=kind==='rpm'?3:kind==='watts'?Math.max(5,target*.05):kind==='res'?0:0;
+  const diff=actual-target;
+  if(Math.abs(diff)>tolerance){
+   if(diff<0){state='zone-low';status='Sous la cible';}
+   else{state='zone-high';status='Au-dessus';}
+  }
+ }
+ tile.classList.add(state);label.classList.add(state);
+ label.textContent=`Mesuré : ${Math.round(actual)} · ${status}`;
+}
+function updateGoals(){
+ const s=steps[idx];const g=s?.goal||{};
+ displayTarget('goalRpm',g.rpm,'');displayTarget('goalRes',g.res,'');displayTarget('goalW',g.w,' W');
+ displayTarget('goalHr',g.hrMin!=null||g.hrMax!=null?`${g.hrMin??'…'}–${g.hrMax??'…'}`:null,'');
+ setZone('tileRpm','deltaRpm',vals.rpm,g.rpm,'rpm');
+ setZone('tileRes','deltaRes',vals.res,g.res,'res');
+ setZone('tileW','deltaW',vals.w,g.w,'watts');
+ setZone('tileHr','deltaHr',vals.hr,{min:g.hrMin,max:g.hrMax},'range');
+}
+function updateRunner(){
+ const s=steps[idx];if(!s){$('phaseName').textContent='Séance terminée';$('clock').textContent='00:00';$('phaseInfo').textContent='Bravo !';$('progressBar').style.width='100%';updateGoals();return;}
+ $('phaseName').textContent=s.name;$('clock').textContent=fmt(left);$('phaseInfo').textContent=`Bloc ${idx+1}/${steps.length} · ${s.kind==='work'?'Effort':s.kind==='rest'?'Récupération':'Travail'}`;
+ $('progressBar').style.width=`${100*(1-left/s.dur)}%`;$('overall').textContent=`Temps total : ${fmt(total)} · Écoulé : ${fmt(elapsed)}`;updateGoals();
+}
+function numberWords(n,lang){
+ n=Math.max(0,Math.round(n));
+ const en0=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+ const enT=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+ const fr0=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize'];
+ if(lang==='fr-FR'){
+  if(n<16)return fr0[n]; if(n<20)return 'dix-'+fr0[n-10];
+  if(n<70){let t=Math.floor(n/10),u=n%10;return ['','','vingt','trente','quarante','cinquante','soixante'][t]+(u?(t===2&&u===1?' et un':'-'+(u<16?fr0[u]:u)):'');}
+  return String(n);
+ }
+ if(n<20)return en0[n];
+ if(n<100)return enT[Math.floor(n/10)]+(n%10?'-'+en0[n%10]:'');
+ if(n<1000)return en0[Math.floor(n/100)]+' hundred'+(n%100?' '+numberWords(n%100,lang):'');
+ return String(n);
+}
+function spokenDuration(seconds,lang){
+ let n=Math.max(0,Math.round(seconds)),m=Math.floor(n/60),s=n%60;
+ if(lang==='fr-FR'){
+  let a=[];if(m)a.push(numberWords(m,lang)+(m===1?' minute':' minutes'));if(s)a.push(numberWords(s,lang)+(s===1?' seconde':' secondes'));return a.join(' et ')||'zéro seconde';
+ }
+ let a=[];if(m)a.push(numberWords(m,lang)+(m===1?' minute':' minutes'));if(s)a.push(numberWords(s,lang)+(s===1?' second':' seconds'));return a.join(' and ')||'zero seconds';
+}
+function spokenPhaseName(name,lang){
+ if(lang==='fr-FR')return name;
+ const map={'Échauffement':'Warm-up','Activation · 3 tours':'Activation, three rounds','Effort court':'Short effort','Endurance active':'Active endurance','Récupération active':'Active recovery','30/15 intense':'Thirty-fifteen intervals','Récupération finale':'Cool-down','Endurance progressive':'Progressive endurance'};
+ return map[name]||name;
+}
+function speak(t){
+ if(!voiceOn||!('speechSynthesis'in window))return;
+ speechSynthesis.cancel();
+ const lang=$('voiceLanguage')?.value||'en-US';
+ const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=lang==='fr-FR'?.92:.96;u.pitch=.9;u.volume=+$('coachVolume').value;
+ const voices=speechSynthesis.getVoices().filter(v=>v.lang?.toLowerCase().startsWith(lang.slice(0,2).toLowerCase()));
+ const preferred=lang==='fr-FR'?/thomas|henri|daniel|paul|male/i:/guy|david|daniel|james|oliver|ryan|alex|male/i;
+ u.voice=voices.find(v=>preferred.test(v.name))||voices.find(v=>/natural|neural|enhanced|premium/i.test(v.name))||voices[0]||null;
+ speechSynthesis.speak(u);
+}
+function coach(){
+ const s=steps[idx];if(!s)return;
+ const lang=$('voiceLanguage').value;
+ let msg;
+ if(lang==='fr-FR')msg=s.kind==='work'?'Allez, effort ! Garde la cadence et tiens la puissance.':s.kind==='rest'?'Récupère activement, souffle et prépare le prochain effort.':'Reste régulier. Respecte ta cadence et stabilise ta puissance.';
+ else msg=s.kind==='work'?'Come on! Push hard. Keep your cadence high and hold your power.':s.kind==='rest'?'Recover actively. Control your breathing and get ready for the next effort.':'Stay steady. Hold your cadence and keep your power under control.';
+ const actual=vals.w!=null?(lang==='fr-FR'?` Tu es à ${Math.round(vals.w)} watts.`:` You are holding ${Math.round(vals.w)} watts.`):'';
+ speak(msg+actual);
+}
+function beep(f=850){try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.value=.07;o.start();o.stop(c.currentTime+.13);o.onended=()=>c.close();}catch(e){}}
+function enterStep(){if(idx>=steps.length){finish();return;}left=steps[idx].dur;beep(steps[idx].kind==='work'?1050:650);updateRunner();const lang=$('voiceLanguage').value;speak(spokenPhaseName(steps[idx].name,lang)+'. '+spokenDuration(left,lang)+'.');}
+function start(){if(runState==='running')return;if(runState==='idle'||runState==='done'){steps=flatten();if(!steps.length){alert('Ajoute un bloc à la séance.');return;}idx=0;elapsed=0;total=steps.reduce((a,s)=>a+s.dur,0);records=[];lastCoach=0;lastSample=0;enterStep();}runState='running';lastTick=Date.now();timer=setInterval(tick,200);$('start').disabled=true;$('pause').disabled=false;$('next').disabled=false;$('start').textContent='▶ Démarrer';log('Séance démarrée.');}
+function tick(){if(runState!=='running')return;const now=Date.now(),dt=Math.min(1,(now-lastTick)/1000);lastTick=now;elapsed+=dt;left-=dt;if(left<=0){idx++;if(idx>=steps.length){finish();return;}enterStep();}updateRunner();const s=Math.floor(elapsed);if(s!==lastSample){lastSample=s;records.push({elapsed:s,phase:steps[idx]?.name||'Fin',rpm:vals.rpm,resistance:vals.res,w:vals.w,hr:vals.hr,targetRPM:steps[idx]?.goal.rpm??'',targetResistance:steps[idx]?.goal.res??'',targetW:steps[idx]?.goal.w??'',targetHRmin:steps[idx]?.goal.hrMin??'',targetHRmax:steps[idx]?.goal.hrMax??''});}const n=+$('coachInterval').value;if(n&&s-lastCoach>=n){lastCoach=s;coach();}}
+function pause(){if(runState!=='running')return;clearInterval(timer);timer=null;runState='paused';$('start').disabled=false;$('start').textContent='▶ Reprendre';$('pause').disabled=true;if('speechSynthesis'in window)speechSynthesis.cancel();log('Pause.');}
+function next(){if(runState!=='running')return;idx++;if(idx>=steps.length){finish();return;}enterStep();}
+function finish(){clearInterval(timer);timer=null;runState='done';$('start').disabled=false;$('start').textContent='▶ Nouvelle séance';$('pause').disabled=true;$('next').disabled=true;updateRunner();summary();beep(500);speak('Séance terminée. Beau travail. Récupère tranquillement.');log('Séance terminée.');}
+function resetWorkout(){clearInterval(timer);timer=null;runState='idle';steps=[];idx=0;elapsed=0;left=0;total=totalSecs();$('clock').textContent='00:00';$('phaseName').textContent='Prêt à démarrer';$('phaseInfo').textContent='Charge une séance puis démarre';$('progressBar').style.width='0%';$('overall').textContent='Temps total : '+fmt(total)+' · Écoulé : 00:00';$('start').disabled=false;$('start').textContent='▶ Démarrer';$('pause').disabled=true;$('next').disabled=true;updateGoals();if('speechSynthesis'in window)speechSynthesis.cancel();}
+function summary(){const avg=k=>{const a=records.map(r=>r[k]).filter(v=>v!=null&&!Number.isNaN(+v));return a.length?Math.round(a.reduce((x,y)=>x+(+y),0)/a.length):'—';},max=k=>{const a=records.map(r=>r[k]).filter(v=>v!=null&&!Number.isNaN(+v));return a.length?Math.round(Math.max(...a)):'—';};$('avgW').textContent=avg('w');$('maxW').textContent=max('w');$('avgHR').textContent=avg('hr');$('maxHR').textContent=max('hr');
+ const reps=[1,2,3,4].map(n=>{const a=records.filter(r=>r.phase&&r.phase.includes(`répétition ${n}/4`)&&r.w!=null).map(r=>Number(r.w));return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null;});
+ if(reps.some(v=>v!==null)){const valid=reps.map((v,i)=>v===null?null:`R${i+1} : ${v} W`).filter(Boolean);const drop=reps[0]&&reps[3]!==null?Math.round((1-reps[3]/reps[0])*100):null;$('intervalSummary').innerHTML='<b>Puissance moyenne par répétition :</b> '+valid.join(' · ')+(drop!==null?`<br>Écart entre R1 et R4 : ${drop}% ${drop>10?'— baisse supérieure à 10 %, intensité probablement trop élevée.':'— baisse contenue.'}`:'');}else $('intervalSummary').textContent='';}
+function exportCSV(){if(!records.length){alert('Aucune donnée enregistrée.');return;}const keys=Object.keys(records[0]),rows=[keys.join(';'),...records.map(r=>keys.map(k=>String(r[k]??'').replaceAll(';',',')).join(';'))];const a=document.createElement('a'),u=URL.createObjectURL(new Blob(['\ufeff'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));a.href=u;a.download='bike-training-objectifs.csv';a.click();URL.revokeObjectURL(u);}
+function setVal(k,v){vals[k]=v;if(k==='w'&&$('ftpLive'))$('ftpLive').textContent=v==null?'—':Math.round(v);const id={w:'watts',rpm:'rpm',hr:'bpm',res:'resistance'}[k];$(id).textContent=v==null?'—':(k==='rpm'?Number(v).toFixed(1):Math.round(v));updateGoals();}
+function hrData(v){const d=new DataView(v.buffer,v.byteOffset,v.byteLength);if(d.byteLength<2)return;const f=d.getUint8(0);setVal('hr',(f&1)?d.getUint16(1,true):d.getUint8(1));}
+function bikeData(v){const d=new DataView(v.buffer,v.byteOffset,v.byteLength);if(d.byteLength<2)return;const f=d.getUint16(0,true);let o=2;if(!(f&1))o+=2;if(f&2)o+=2;if(f&4){if(o+2<=d.byteLength){setVal('rpm',d.getUint16(o,true)/2);o+=2;}}if(f&8)o+=2;if(f&16)o+=3;if(f&32){if(o+2<=d.byteLength){setVal('res',d.getInt16(o,true));o+=2;}}if(f&64){if(o+2<=d.byteLength){setVal('w',d.getInt16(o,true));o+=2;}}if(f&128)o+=2;if(f&256)o+=5;if(f&512&&o<d.byteLength)setVal('hr',d.getUint8(o));}
+function powerData(v){const d=new DataView(v.buffer,v.byteOffset,v.byteLength);if(d.byteLength>=4)setVal('w',d.getInt16(2,true));}
+let crank=null;function cscData(v){const d=new DataView(v.buffer,v.byteOffset,v.byteLength);if(d.byteLength<1)return;let o=1;const f=d.getUint8(0);if(f&1)o+=6;if(f&2&&o+4<=d.byteLength){const r=d.getUint16(o,true),t=d.getUint16(o+2,true);if(crank){const dr=(r-crank.r+65536)%65536,dt=(t-crank.t+65536)%65536;if(dt&&dr<20)setVal('rpm',dr*60*1024/dt);}crank={r,t};}}
+function setDevice(k,d){$(k+'Dot').classList.toggle('on',!!d);$(k+'Status').textContent=d?'Connecté · '+(d.name||k):'Non connecté';}
+async function connectHR(){if(!navigator.bluetooth){log('Web Bluetooth indisponible.');return;}try{const d=await navigator.bluetooth.requestDevice({filters:[{services:[U.hr]}]});hr=d;d.addEventListener('gattserverdisconnected',()=>{hr=null;setDevice('hr',null);});const s=await d.gatt.connect(),sv=await s.getPrimaryService(U.hr),ch=await sv.getCharacteristic(U.hrm);await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>hrData(e.target.value));setDevice('hr',d);log('HRM Band connecté.');}catch(e){log('Brassard : '+e.message);}}
+async function connectBike(){if(!navigator.bluetooth){log('Web Bluetooth indisponible.');return;}try{const d=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[U.ftms,U.csc,U.power]});bike=d;d.addEventListener('gattserverdisconnected',()=>{bike=null;setDevice('bike',null);});const s=await d.gatt.connect();for(const uuid of [U.ftms,U.csc,U.power]){try{const sv=await s.getPrimaryService(uuid),cs=await sv.getCharacteristics();for(const ch of cs){if([U.ibd,U.cscm,U.power].includes(ch.uuid)){await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{if(ch.uuid===U.ibd)bikeData(e.target.value);else if(ch.uuid===U.cscm)cscData(e.target.value);else powerData(e.target.value);});}}}catch(e){}}setDevice('bike',d);log('Vélo connecté : '+(d.name||'vélo'));}catch(e){log('Vélo : '+e.message);}}
+
+// Test FTP autonome : n'interfère pas avec le chronomètre des séances.
+const ftpPhases=[
+ {name:'Échauffement progressif · Z1-Z2',dur:600},
+ {name:'Activation · Z3',dur:180},
+ {name:'Récupération avant effort préparatoire · Z1',dur:120},
+ {name:'Effort préparatoire soutenu · 5 min',dur:300},
+ {name:'Récupération avant test · Z1',dur:600},
+ {name:'TEST FTP · 20 MINUTES',dur:1200,test:true},
+ {name:'Retour au calme · Z1',dur:600}
+];
+let ftpTimer=null,ftpState='idle',ftpIndex=0,ftpLeft=0,ftpElapsed=0,ftpLast=0,ftpSamples=[],ftpLastSample=-1;
+function fmtClock(s){return fmt(s);}
+function ftpUpdate(){
+ const p=ftpPhases[ftpIndex];$('ftpClock').textContent=fmtClock(ftpLeft);
+ $('ftpPhase').textContent=p?p.name.toUpperCase():'TEST TERMINÉ';
+ $('ftpLive').textContent=vals.w==null?'—':Math.round(vals.w);
+ $('ftpProgress').style.width=(ftpElapsed/ftpPhases.reduce((a,x)=>a+x.dur,0)*100)+'%';
+ $('ftpInstruction').textContent=p?(p.test?'Après l’effort préparatoire de 5 minutes et 10 minutes de récupération, réalise 20 minutes au meilleur rythme régulier possible. Évite un départ trop rapide.':`Phase en cours : ${p.name}. Temps restant : ${fmt(ftpLeft)}.`):'Test terminé. Consulte la moyenne et la FTP estimée.';
+}
+function ftpBeginPhase(){ftpLeft=ftpPhases[ftpIndex].dur;ftpUpdate();}
+function ftpFinish(){
+ clearInterval(ftpTimer);ftpTimer=null;ftpState='done';
+ const avg=ftpSamples.length?ftpSamples.reduce((a,b)=>a+b,0)/ftpSamples.length:null;
+ const estimate=avg?Math.round(avg*.95):null;
+ $('ftpAverage').textContent=avg?Math.round(avg):'—';$('ftpEstimate').textContent=estimate||'—';
+ if(estimate){$('ftpManual').value=estimate;log(`Test FTP terminé : moyenne ${Math.round(avg)} W ; FTP estimée ${estimate} W.`);}
+ $('ftpStart').disabled=false;$('ftpStart').textContent='▶ Refaire le test';$('ftpPause').disabled=true;ftpUpdate();
+}
+function ftpTick(){
+ if(ftpState!=='running')return;
+ const now=Date.now(),dt=Math.min(.5,(now-ftpLast)/1000);ftpLast=now;ftpElapsed+=dt;ftpLeft-=dt;
+ const p=ftpPhases[ftpIndex];
+ if(p.test&&vals.w!=null&&Math.floor(ftpElapsed)!==ftpLastSample){ftpSamples.push(Number(vals.w));ftpLastSample=Math.floor(ftpElapsed);}
+ if(ftpLeft<=0){ftpIndex++;if(ftpIndex>=ftpPhases.length){ftpFinish();return;}ftpBeginPhase();}
+ ftpUpdate();
+}
+function ftpStart(){
+ if(ftpState==='done'||ftpState==='idle'){ftpIndex=0;ftpElapsed=0;ftpSamples=[];ftpLastSample=-1;$('ftpAverage').textContent='—';$('ftpEstimate').textContent='—';ftpBeginPhase();}
+ if(ftpState==='paused'){}
+ ftpState='running';ftpLast=Date.now();ftpTimer=setInterval(ftpTick,250);
+ $('ftpStart').disabled=true;$('ftpPause').disabled=false;$('ftpStart').textContent='▶ Test en cours';
+ log('Test FTP autonome démarré.');
+}
+function ftpPause(){
+ if(ftpState!=='running')return;clearInterval(ftpTimer);ftpTimer=null;ftpState='paused';
+ $('ftpStart').disabled=false;$('ftpStart').textContent='▶ Reprendre le test';$('ftpPause').disabled=true;
+}
+function ftpReset(){
+ clearInterval(ftpTimer);ftpTimer=null;ftpState='idle';ftpIndex=0;ftpElapsed=0;ftpLeft=0;ftpSamples=[];ftpLastSample=-1;
+ $('ftpClock').textContent='00:00';$('ftpPhase').textContent='PRÊT POUR LE TEST';$('ftpProgress').style.width='0%';
+ $('ftpInstruction').textContent='Échauffement 10 min · Activation 3 min · Récupération 2 min · Effort préparatoire 5 min · Récupération 10 min · Test 20 min · Retour au calme 10 min';
+ $('ftpAverage').textContent='—';$('ftpEstimate').textContent='—';$('ftpStart').disabled=false;$('ftpStart').textContent='▶ Démarrer le test';$('ftpPause').disabled=true;
+}
+function refreshFTPSaved(){
+ const f=getFTP();$('ftpSavedInfo').textContent=f?`FTP enregistrée : ${f} W · Les séances calculeront leurs cibles à partir de cette valeur.`:'Aucune FTP enregistrée. Les séances afficheront les zones sans cible en watts.';
+ if(f)$('ftpManual').value=f;const hm=Number(localStorage.getItem('bikeTrainingHRmax'));if(hm)$('hrMaxManual').value=hm;
+}
+$('ftpStart').addEventListener('click',ftpStart);$('ftpPause').addEventListener('click',ftpPause);$('ftpReset').addEventListener('click',ftpReset);
+$('ftpSave').addEventListener('click',()=>{
+ const v=Math.round(Number($('ftpManual').value));
+ if(!Number.isFinite(v)||v<1||v>2000){alert('Saisis une FTP valide en watts.');return;}
+ localStorage.setItem('bikeTrainingFTP',String(v));const hm=Math.round(Number($('hrMaxManual').value));if(Number.isFinite(hm)&&hm>=80&&hm<=240)localStorage.setItem('bikeTrainingHRmax',String(hm));refreshFTPSaved();
+ if(['threshold','endurance2','vo2'].includes($('preset').value)){blocks=optimizedPlan($('preset').value);renderEditor();resetWorkout();}
+ log(`FTP enregistrée : ${v} W.`);
+});
+$('enduranceDuration').addEventListener('change',()=>{if($('preset').value==='endurance2')loadPreset();});
+
+function stations(){ $('station').innerHTML=radio[$('radioGenre').value].map((a,i)=>`<option value="${i}">${a[0]}</option>`).join('');}
+$('radioGenre').addEventListener('change',stations);$('openRadio').addEventListener('click',()=>{const a=radio[$('radioGenre').value][+$('station').value];window.open(a[1],'_blank','noopener');});
+$('loadPreset').addEventListener('click',loadPreset);$('addSimple').addEventListener('click',()=>{blocks.push({kind:'simple',name:'Nouveau bloc',dur:120,goal:target()});renderEditor();resetWorkout();});
+$('addInterval').addEventListener('click',()=>{blocks.push({kind:'interval',name:'30/15',work:30,rest:15,reps:12,workGoal:target(),restGoal:target()});renderEditor();resetWorkout();});
+$('savePlan').addEventListener('click',()=>{try{localStorage.setItem('bikeTrainingPlan',JSON.stringify(blocks));alert('Séance enregistrée sur cet appareil.');}catch(e){alert('Enregistrement impossible.');}});
+$('loadPlan').addEventListener('click',()=>{try{const v=localStorage.getItem('bikeTrainingPlan');if(!v){alert('Aucune séance enregistrée.');return;}blocks=JSON.parse(v);renderEditor();resetWorkout();log('Séance personnelle chargée.');}catch(e){alert('Chargement impossible.');}});
+$('start').addEventListener('click',start);$('pause').addEventListener('click',pause);$('next').addEventListener('click',next);$('reset').addEventListener('click',resetWorkout);$('exportCsv').addEventListener('click',exportCSV);
+$('bikeConnect').addEventListener('click',connectBike);$('hrConnect').addEventListener('click',connectHR);$('disconnectAll').addEventListener('click',()=>{if(bike?.gatt.connected)bike.gatt.disconnect();if(hr?.gatt.connected)hr.gatt.disconnect();bike=null;hr=null;setDevice('bike',null);setDevice('hr',null);});
+$('testVoice').addEventListener('click',()=>speak($('voiceLanguage').value==='fr-FR'?'Allez ! On se concentre, on garde le rythme et on va chercher le prochain objectif.':'Come on! Stay focused, keep your rhythm, and go for the next target.'));$('coachToggle').addEventListener('click',()=>{voiceOn=!voiceOn;$('coachToggle').textContent=voiceOn?'Coach activé':'Coach désactivé';if(!voiceOn&&'speechSynthesis'in window)speechSynthesis.cancel();});
+function loadYoutube(){
+ const raw=$('youtubeUrl').value.trim();if(!raw){alert('Colle un lien YouTube.');return;}
+ try{
+  const u=new URL(raw);const host=u.hostname.replace(/^www\./,'').toLowerCase();let id='',list=u.searchParams.get('list');
+  if(host==='youtu.be')id=u.pathname.split('/').filter(Boolean)[0]||'';
+  else if(host.endsWith('youtube.com')){
+   id=u.searchParams.get('v')||'';
+   const parts=u.pathname.split('/').filter(Boolean);
+   if(!id&&['embed','shorts','live'].includes(parts[0]))id=parts[1]||'';
+  }else throw new Error('Adresse non reconnue');
+  let embed='';
+  if(id)embed='https://www.youtube.com/embed/'+encodeURIComponent(id)+(list?'?list='+encodeURIComponent(list):'');
+  else if(list)embed='https://www.youtube.com/embed/videoseries?list='+encodeURIComponent(list);
+  else throw new Error('Aucune vidéo ou playlist trouvée');
+  if(location.protocol==='http:'||location.protocol==='https:'){
+   embed+=(embed.includes('?')?'&':'?')+'origin='+encodeURIComponent(location.origin);
+  }else{
+   $('youtubeHelp').textContent='Tu ouvres le fichier directement depuis ton ordinateur. Pour éviter l’erreur YouTube 153, ouvre cette application depuis GitHub Pages (HTTPS) ou localhost.';
+  }
+  $('youtubePlayer').src=embed;
+ }catch(e){alert('Lien YouTube invalide. Utilise un lien youtube.com ou youtu.be.');}
+}
+$('loadYoutube').addEventListener('click',loadYoutube);
+$('youtubeUrl').addEventListener('keydown',e=>{if(e.key==='Enter')loadYoutube();});
+$('compat').textContent=!window.isSecureContext?'⚠️ Ouvre depuis HTTPS ou localhost pour le Bluetooth.':!navigator.bluetooth?'⚠️ Web Bluetooth non détecté : utilise Chrome sur Mac ou Android.':'✓ Web Bluetooth détecté. Connecte les deux capteurs.';
+stations();renderEditor();resetWorkout();refreshFTPSaved();ftpReset();log('Application prête. Séances FTP et test autonome disponibles.');
+})();
+</script>
+</body></html>
